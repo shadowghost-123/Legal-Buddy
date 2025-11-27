@@ -1,0 +1,368 @@
+{
+  "entities": {
+    "LawArticle": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LawArticle",
+      "type": "object",
+      "description": "Represents a law article with its details.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the LawArticle entity."
+        },
+        "sectionNo": {
+          "type": "string",
+          "description": "The section number of the law article (e.g., IPC 354)."
+        },
+        "actName": {
+          "type": "string",
+          "description": "The name of the act the law article belongs to (e.g., Indian Penal Code)."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the law article (e.g., Harassment, Cybercrime)."
+        },
+        "punishment": {
+          "type": "string",
+          "description": "The punishment associated with the law article."
+        },
+        "simpleExplanation": {
+          "type": "string",
+          "description": "A simplified explanation of the law article."
+        },
+        "officialText": {
+          "type": "string",
+          "description": "The official text of the law article."
+        },
+        "keywords": {
+          "type": "array",
+          "description": "Keywords associated with the law article.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "sectionNo",
+        "actName",
+        "category",
+        "punishment",
+        "simpleExplanation",
+        "officialText",
+        "keywords"
+      ]
+    },
+    "Template": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Template",
+      "type": "object",
+      "description": "Represents a legal template (e.g., FIR, Complaint).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Template entity."
+        },
+        "templateType": {
+          "type": "string",
+          "description": "The type of the template (e.g., FIR, Complaint, RTI)."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the template."
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the template (HTML or text)."
+        }
+      },
+      "required": [
+        "id",
+        "templateType",
+        "title",
+        "content"
+      ]
+    },
+    "Evidence": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Evidence",
+      "type": "object",
+      "description": "Represents evidence uploaded by the user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Evidence entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Evidence)"
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "The date and time when the evidence was uploaded.",
+          "format": "date-time"
+        },
+        "fileType": {
+          "type": "string",
+          "description": "The type of file uploaded (e.g., image, audio, text)."
+        },
+        "fileUrl": {
+          "type": "string",
+          "description": "The URL of the uploaded file in Firebase Storage or local storage.",
+          "format": "uri"
+        },
+        "encryptionKey": {
+          "type": "string",
+          "description": "The encryption key used to encrypt the evidence (if applicable).",
+          "format": "string"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "uploadDate",
+        "fileType",
+        "fileUrl"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The user's phone number."
+        },
+        "role": {
+          "type": "string",
+          "description": "The user's role in the application.",
+          "enum": [
+            "Client",
+            "Advocate",
+            "Guest"
+          ]
+        },
+        "language": {
+          "type": "string",
+          "description": "The user's preferred language (e.g., en, hi, kn)."
+        }
+      },
+      "required": [
+        "id",
+        "role"
+      ]
+    },
+    "IssueMapping": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "IssueMapping",
+      "type": "object",
+      "description": "Represents the mapping of a user-described issue to relevant law articles.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the IssueMapping entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N IssueMapping)"
+        },
+        "issueDescription": {
+          "type": "string",
+          "description": "The user's description of the issue."
+        },
+        "mappingDate": {
+          "type": "string",
+          "description": "The date and time when the issue was mapped.",
+          "format": "date-time"
+        },
+        "lawArticleIds": {
+          "type": "array",
+          "description": "References to LawArticles. (Relationship: LawArticle N:N IssueMapping)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "severityScore": {
+          "type": "string",
+          "description": "The severity score of the issue (low, medium, high)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "issueDescription",
+        "mappingDate",
+        "lawArticleIds",
+        "severityScore"
+      ]
+    },
+    "Bookmark": {
+      "$schema": "http://json-schema.org/draft-07-schema#",
+      "title": "Bookmark",
+      "type": "object",
+      "description": "Represents a user's bookmark for a law article.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Bookmark entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Bookmark)"
+        },
+        "lawArticleId": {
+          "type": "string",
+          "description": "Reference to LawArticle. (Relationship: LawArticle 1:N Bookmark)"
+        },
+        "bookmarkDate": {
+          "type": "string",
+          "description": "The date and time when the law article was bookmarked.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "lawArticleId",
+        "bookmarkDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous",
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/law_articles/{lawArticleId}",
+        "definition": {
+          "entityName": "LawArticle",
+          "schema": {
+            "$ref": "#/backend/entities/LawArticle"
+          },
+          "description": "Collection for storing law articles. Accessible to all authenticated users.",
+          "params": [
+            {
+              "name": "lawArticleId",
+              "description": "Unique identifier for the law article."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/templates/{templateId}",
+        "definition": {
+          "entityName": "Template",
+          "schema": {
+            "$ref": "#/backend/entities/Template"
+          },
+          "description": "Collection for storing legal templates. Accessible to all authenticated users.",
+          "params": [
+            {
+              "name": "templateId",
+              "description": "Unique identifier for the legal template."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/evidences/{evidenceId}",
+        "definition": {
+          "entityName": "Evidence",
+          "schema": {
+            "$ref": "#/backend/entities/Evidence"
+          },
+          "description": "Collection for storing user-uploaded evidence. User ID is included in the path for ownership. Each document contains a 'userId' field, which is redundant but simplifies security rules and is required by schema.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "evidenceId",
+              "description": "Unique identifier for the evidence."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Collection for storing user data. Path-based ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/issue_mappings/{issueMappingId}",
+        "definition": {
+          "entityName": "IssueMapping",
+          "schema": {
+            "$ref": "#/backend/entities/IssueMapping"
+          },
+          "description": "Collection for storing user issue mappings. User ID is included in the path for ownership. Each document contains a 'userId' field, which is redundant but simplifies security rules and is required by schema.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "issueMappingId",
+              "description": "Unique identifier for the issue mapping."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/bookmarks/{bookmarkId}",
+        "definition": {
+          "entityName": "Bookmark",
+          "schema": {
+            "$ref": "#/backend/entities/Bookmark"
+          },
+          "description": "Collection for storing user bookmarks. User ID is included in the path for ownership. Each document contains a 'userId' field, which is redundant but simplifies security rules and is required by schema.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "bookmarkId",
+              "description": "Unique identifier for the bookmark."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to ensure security, scalability, and ease of debugging, adhering to the principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs. The core strategy revolves around denormalization and structural segregation to minimize complex security rules and enhance data integrity.\n\n1.  **Authorization Independence:**  Authorization is primarily path-based for user-owned data (e.g., evidence, issue mappings, bookmarks). This eliminates the need for `get()` calls in security rules. For LawArticles and Templates, which are global resources, no user-specific authorization is needed beyond basic access.\n\n2.  **Clarity of Intent:**  The structure uses explicit naming conventions and separates data based on access requirements. User-specific data resides under `/users/{userId}` paths, making ownership clear.  The use of a `status` field (if implemented in the future for other entities) would further enhance clarity.\n\n3.  **DBAC (Database-Based Access Control):**  Roles are not explicitly modeled since the app does not require any special elevated roles; auth relies solely on `request.auth.uid`.\n\n4.  **QAPs (Rules Are Not Filters):** The structure enables secure `list` operations. Law articles and templates are stored in root-level collections and can be listed without complex filtering based on user roles. Evidence, IssueMappings, and Bookmarks are user-specific and stored under `/users/{userId}`, allowing listing based on user ID without needing to filter based on document content.\n\nSpecific strategies implemented:\n\n*   **A. Authorization Independence via Denormalization:** All user-related data is stored under their respective user ID paths (e.g., `/users/{userId}/evidences/{evidenceId}`). This eliminates the need to fetch parent document data (e.g., user roles) when accessing child documents. No denormalization is strictly required because the root-level collections are public to all users.\n*   **B. Structural Segregation:**  User-specific data (Evidence, IssueMapping, Bookmark) is segregated from global data (LawArticle, Template). Each collection has a homogeneous security posture: user-owned data requires checking the `userId`, while global data might only require authentication.\n*   **C. Access Modeling:**\n    *   **Private Data:** Evidence, IssueMapping, and Bookmarks use path-based ownership (`/users/{userId}/...`).\n    *   **Global Data:** LawArticle and Template reside in root-level collections without user-specific ownership.\n*   **D. Data Clarity and Predictability:**  Clear naming conventions are used (e.g., `userId` for user IDs). The structure avoids dynamic keys, promoting a predictable schema."
+  }
+}
+
+    

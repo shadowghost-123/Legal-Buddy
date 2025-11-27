@@ -1,0 +1,156 @@
+/**
+ * Core Philosophy: This ruleset implements a hybrid security model. It provides public,
+ * read-only access to global data resources like law articles and templates for all
+ * authenticated users. For user-specific data (profiles, evidence, bookmarks, etc.),
+ * it enforces a strict user-ownership model, where only the creator of the data can
+ * read or modify it.
+ *
+ * Data Structure: The data is organized into two distinct categories:
+ * 1. Top-level collections ('law_articles', 'templates') for shared, global information.
+ * 2. A primary '/users/{userId}' collection that acts as a root for all private,
+ *    user-owned data, which is stored in subcollections like 'evidences' and 'bookmarks'.
+ *
+ * Key Security Decisions:
+ * - All operations require user authentication, including anonymous users. Unauthenticated
+ *   access is denied everywhere.
+ * - Global data collections ('law_articles', 'templates') are read-only for clients.
+ *   This prevents any user from modifying the application's core data. It is assumed
+ *   this data is managed via a trusted backend process or the Firebase Console.
+ * - Listing users from the top-level '/users' collection is explicitly disallowed to
+ *   protect user privacy and prevent enumeration attacks.
+ * - A user's profile document ('/users/{userId}') cannot be deleted by the client to
+ *   prevent orphaning its subcollection data (e.g., evidence, bookmarks).
+ *
+ * Denormalization for Authorization: The structure leverages path-based authorization
+ * heavily. All user-owned documents are nested under '/users/{userId}', allowing for simple,
+ * performant rules that check ownership by comparing the `userId` in the path to the
+ * caller's authenticated UID. Furthermore, documents in these user subcollections contain a
+ * denormalized `userId` field. The rules enforce on creation and update that this internal
+ * field matches the path, ensuring a permanent and verifiable link to the owner.
+ *
+ * Structural Segregation: Public and private data are cleanly separated. Global, read-only
+ * data resides in top-level collections. All private, user-specific data is located within
+ * the '/users/{userId}' data tree. This segregation simplifies rules and makes list
+ * operations on public data secure and efficient.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --------------------------------------------------------------------------------
+    // Helper Functions
+    // --------------------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated (either via password or anonymously).
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the authenticated user's UID matches the provided userId.
+     * This is the primary function for enforcing document ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Ensures a document already exists before an update or delete operation.
+     * This prevents requests from succeeding against non-existent documents.
+     */
+    function isExistingDoc() {
+      return resource != null;
+    }
+
+    // --------------------------------------------------------------------------------
+    // Global Read-Only Collections
+    // --------------------------------------------------------------------------------
+
+    /**
+     * @description Provides read-only access to law articles for any authenticated user.
+     * @path /law_articles/{lawArticleId}
+     * @allow An authenticated user `(get)`s a document: `/law_articles/ipc_354`.
+     * @deny An anonymous user tries to `(create)` a new document.
+     * @principle Secures global lookup data by making it read-only for clients.
+     */
+    match /law_articles/{lawArticleId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Provides read-only access to legal templates for any authenticated user.
+     * @path /templates/{templateId}
+     * @allow An authenticated user `(list)`s the collection: `/templates`.
+     * @deny Any user tries to `(update)` an existing template.
+     * @principle Secures global lookup data by making it read-only for clients.
+     */
+    match /templates/{templateId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    // --------------------------------------------------------------------------------
+    // User-Owned Data
+    // --------------------------------------------------------------------------------
+
+    /**
+     * @description Governs access to a user's own profile document.
+     * @path /users/{userId}
+     * @allow A user with UID 'user123' `(create)`s their own profile at `/users/user123`.
+     * @deny A user with UID 'user456' tries to `(get)` the profile at `/users/user123`.
+     * @principle Enforces self-creation and owner-only access for user profile data.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isOwner(userId) && isExistingDoc() && request.resource.data.id == resource.data.id;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Secures a user's private evidence documents.
+     * @path /users/{userId}/evidences/{evidenceId}
+     * @allow User 'user123' `(create)`s a new evidence doc in `/users/user123/evidences`.
+     * @deny User 'user456' tries to `(list)` evidences from `/users/user123/evidences`.
+     * @principle Restricts access to a user's own data tree using path-based ownership.
+     */
+    match /users/{userId}/evidences/{evidenceId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isOwner(userId) && isExistingDoc() && request.resource.data.userId == resource.data.userId;
+      allow delete: if isOwner(userId) && isExistingDoc();
+    }
+
+    /**
+     * @description Secures a user's private issue mapping documents.
+     * @path /users/{userId}/issue_mappings/{issueMappingId}
+     * @allow User 'user123' `(delete)`s their own mapping at `/users/user123/issue_mappings/map_abc`.
+     * @deny User 'user456' tries to `(update)` a mapping in user123's subcollection.
+     * @principle Restricts access to a user's own data tree using path-based ownership.
+     */
+    match /users/{userId}/issue_mappings/{issueMappingId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isOwner(userId) && isExistingDoc() && request.resource.data.userId == resource.data.userId;
+      allow delete: if isOwner(userId) && isExistingDoc();
+    }
+
+    /**
+     * @description Secures a user's private bookmark documents.
+     * @path /users/{userId}/bookmarks/{bookmarkId}
+     * @allow User 'user123' `(get)`s their own bookmark at `/users/user123/bookmarks/bm_xyz`.
+     * @deny User 'user456' tries to `(create)` a bookmark in user123's subcollection.
+     * @principle Restricts access to a user's own data tree using path-based ownership.
+     */
+    match /users/{userId}/bookmarks/{bookmarkId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isOwner(userId) && isExistingDoc() && request.resource.data.userId == resource.data.userId;
+      allow delete: if isOwner(userId) && isExistingDoc();
+    }
+  }
+}

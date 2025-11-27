@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "section_no": "IPC 354",
+    "act_name": "Indian Penal Code",
+    "category": "Harassment",
+    "punishment": "Up to 2 years + fine",
+    "simple_explanation": "Protects women from molestation/harassment",
+    "official_text": "Assault or criminal force to a woman with intent to outrage her modesty.",
+    "keywords": ["harassment","molestation","woman"]
+  },
+  {
+    "id": 2,
+    "section_no": "IPC 376",
+    "act_name": "Indian Penal Code",
+    "category": "Sexual Offence",
+    "punishment": "7 years – life imprisonment",
+    "simple_explanation": "Law against rape",
+    "official_text": "Rape and its punishments as defined under IPC.",
+    "keywords": ["rape","sexual assault"]
+  },
+  {
+    "id": 3,
+    "section_no": "IPC 420",
+    "act_name": "Indian Penal Code",
+    "category": "Fraud/Scam",
+    "punishment": "Up to 7 years + fine",
+    "simple_explanation": "Cheating and dishonestly inducing delivery of property.",
+    "official_text": "Cheating and dishonestly inducing delivery of property.",
+    "keywords": ["fraud","scam","cheating"]
+  },
+  {
+    "id": 4,
+    "section_no": "IPC 379",
+    "act_name": "Indian Penal Code",
+    "category": "Theft",
+    "punishment": "Up to 3 years + fine",
+    "simple_explanation": "Punishment for theft.",
+    "official_text": "Whoever commits theft shall be punished…",
+    "keywords": ["theft","stealing"]
+  },
+  {
+    "id": 5,
+    "section_no": "IPC 498A",
+    "act_name": "Indian Penal Code",
+    "category": "Domestic",
+    "punishment": "Up to 3 years + fine",
+    "simple_explanation": "Protection of women from cruelty by husband or relatives.",
+    "official_text": "Subjecting a woman to cruelty by husband or relatives.",
+    "keywords": ["domestic","cruelty","dowry"]
+  },
+  {
+    "id": 6,
+    "section_no": "IPC 506",
+    "act_name": "Indian Penal Code",
+    "category": "Threats",
+    "punishment": "2–7 years depending on case",
+    "simple_explanation": "Criminal intimidation.",
+    "official_text": "Punishment for criminal intimidation.",
+    "keywords": ["threat","intimidation"]
+  },
+  {
+    "id": 7,
+    "section_no": "IT Act 66C",
+    "act_name": "Information Technology Act",
+    "category": "Cybercrime",
+    "punishment": "Up to 3 years + fine",
+    "simple_explanation": "Identity theft online.",
+    "official_text": "Punishment for identity theft and related offences under IT Act.",
+    "keywords": ["identity theft","cybercrime","hacking"]
+  },
+  {
+    "id": 8,
+    "section_no": "IT Act 66E",
+    "act_name": "Information Technology Act",
+    "category": "Cybercrime",
+    "punishment": "Up to 3 years + fine",
+    "simple_explanation": "Violation of privacy by sharing private images.",
+    "official_text": "Punishment for violation of privacy and sharing intimate images.",
+    "keywords": ["privacy","images","revenge porn"]
+  },
+  {
+    "id": 9,
+    "section_no": "IT Act 67",
+    "act_name": "Information Technology Act",
+    "category": "Cybercrime",
+    "punishment": "Up to 5 years + fine",
+    "simple_explanation": "Publishing obscene material online.",
+    "official_text": "Punishment for publishing obscene content in electronic form.",
+    "keywords": ["obscene","pornography","online content"]
+  },
+  {
+    "id": 10,
+    "section_no": "Consumer Protection Act 2019",
+    "act_name": "Consumer Protection Act",
+    "category": "Consumer",
+    "punishment": "Compensation / relief",
+    "simple_explanation": "Rights of consumers and complaint redressal mechanisms.",
+    "official_text": "Provisions related to consumer rights and remedies.",
+    "keywords": ["consumer","refund","defect","service"]
+  }
+]
